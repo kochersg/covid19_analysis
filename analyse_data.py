@@ -1,3 +1,16 @@
+"""
+A python script that basically visualizes data from the CSSE GitHub data set. 
+The CSSE data can be found here: https://github.com/CSSEGISandData/COVID-19.git
+
+Usage
+-----
+The script expects the data in a folder "COVID-19" which resides in the same root-folder as "covid19_anaylis":
+
+    ./SomeRootFolder/
+            |---> COVID-19
+            |---> covid19_analysis
+
+"""
 import numpy as np 
 import matplotlib.pyplot as plt
 from datetime import datetime as dt
@@ -11,25 +24,67 @@ CFnames = namedtuple('fnames',['confirmed','recovered','deaths'], \
     '../COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv'])
 
 class CDataTimeSeries:
-    def __init__(self, country = "Germany"):
+    """
+    Class representing and plotting time series data.
+    ...
+    Attributes
+    ----------
+    fname : namedTuple fnames 
+        containing the file URLs to the data files
+    country : str
+        string containing the country name
+    lattitude : float
+        geographic lattitude of the country
+    longitude : float
+        geographic longitude of the country
+    days : list of datetime objects
+        dates on which the data points where taken
+    n_confirmed : numpy array of floats
+        total number of confirmed cases, every element represents the data of one day
+    n_recovered : numpy array of floats
+        total number of recovered patients
+    n_deaths : numpy array of floats
+        total number of deaths
+    n_still_infected : numpy array of floats
+        number of people who have not recovered or died, yet
+
+    Methods
+    -------
+    plot_time_series(ax=None, show_plot=False, show_xlabel=True)
+        Plots the time series data for a selected country. If a matplotlib.pyplot axes-Object is
+        provided it will plot inside this axes. Argument show_plot controls if the pyplot.show() 
+        command is called and the plot is shown. Argument show_xlabel controls, if the
+        xlabel 'Date' is plotted (useful for many staggered subplots)
+
+    """
+    def __init__(self, country='Germany'):
+        """
+        Parameter
+        ---------
+        country : str, optional
+            country to plot data from (default 'Germany')
+        """
         self.fname = CFnames()
         self.country = country
         self.latitude = None
         self.longitude = None
         self.days = []
-        self.n_confirmed = self._read_csv_data(self.fname.confirmed)        
-        self.n_deaths = self._read_csv_data(self.fname.deaths)
-        self.n_recovered = self._read_csv_data(self.fname.recovered)
+        self.n_confirmed = self.__read_csv_data(self.fname.confirmed)        
+        self.n_deaths = self.__read_csv_data(self.fname.deaths)
+        self.n_recovered = self.__read_csv_data(self.fname.recovered)
         self.n_still_infected = self.n_confirmed-self.n_deaths-self.n_recovered
 
-    def _read_csv_data(self,fname):
-        with open(fname,'rt') as fh:
-            csv_data=fh.readlines()
+    def __read_csv_data(self,fname):
+        try:
+            with open(fname,'rt') as fh:
+                csv_data=fh.readlines()
+        except:
+            raise NotADirectoryError(f"File {fname} not found. Make sure the \'COVID-19\' directory is in the same root directory as the \'covid19_analysis\' directory")
         if self.days == []:
-            self._parse_csv_data_header_for_dates(csv_data[0])
-        return(self._parse_csv_data(csv_data[1:]))
+            self.__parse_csv_data_header_for_dates(csv_data[0])
+        return(self.__parse_csv_data(csv_data[1:]))
 
-    def _parse_csv_data(self, data):
+    def __parse_csv_data(self, data):
         n_data=[]
         for d in data:
             n_strs = d.split(',')
@@ -41,7 +96,7 @@ class CDataTimeSeries:
                 break
         return(np.array(n_data))
             
-    def _parse_csv_data_header_for_dates(self, hdata):
+    def __parse_csv_data_header_for_dates(self, hdata):
         d = hdata.split(',')
         for day_str in d[4:]:
             # print(day_str)
@@ -51,7 +106,20 @@ class CDataTimeSeries:
                 day_time=dt.strptime(day_str[:-1],'%m/%d/%y')
             self.days.append(day_time)
 
-    def plot_time_series(self, ax=None, show_plot = False, show_xlabel = True):
+    def plot_time_series(self, ax=None, show_plot=False, show_xlabel=True):
+        """Plots the time series of the selected country
+
+        Parameters
+        ----------
+        ax : matplotlib.pyplot axes object, optional
+            axes object used for plotting, if not provided the function will create
+            a figure with axes (default is None)
+        show_plot : boolean, optional
+            controls if the plot is shown at the end of the method call (default is False)
+        show_xlabel : boolean, optional
+            controls if the x-label 'Date' is plotted (default is True)
+
+        """
         if ax == None:
             fh=plt.figure(figsize = [10,8])
             ax=fh.add_subplot(111)
