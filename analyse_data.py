@@ -143,10 +143,14 @@ class CDataTimeSeriesCollection:
             
 
 if __name__ == "__main__":
-    countries=('Germany','Italy','Spain','United Kingdom','France','Austria','Netherlands')
-    # single_country = CDataTimeSeries(country = 'Germany')
-    # single_country.plot_time_series(show_plot=True)
+    # plot time series data of a single country
+    single_country = CDataTimeSeries(country = 'Germany')
+    single_country.plot_time_series(show_plot=True)
+    # load data of several countries into a collection
+    countries=('Germany','Italy','Spain','United Kingdom','France','Austria')
     dc = CDataTimeSeriesCollection(countries)
-    # dc.plot_collection_subplots()
-    dc.plot_country_comparison('Germany','France',show_plot=True)
+    # plot the collection data into a graph with one subplot per country   
+    dc.plot_collection_subplots()
+    # plot a comparison between the timeseries of two different countries into one plot
+    dc.plot_country_comparison('Germany','Italy',show_plot=True)
     
