@@ -106,7 +106,7 @@ class CDataTimeSeries:
                 day_time=dt.strptime(day_str[:-1],'%m/%d/%y')
             self.days.append(day_time)
 
-    def plot_time_series(self, ax=None, show_plot=False, show_xlabel=True):
+    def plot_time_series(self, ax=None, show_plot=False, show_xlabel=True, use_scientific_notation=False):
         """Plots the time series of the selected country
 
         Parameters
@@ -118,6 +118,8 @@ class CDataTimeSeries:
             controls if the plot is shown at the end of the method call (default is False)
         show_xlabel : boolean, optional
             controls if the x-label 'Date' is plotted (default is True)
+        use_scientific_notation : boolean, optional
+            controls if the y-axis is plotted in scientific notatiom 1e... (default is False)
 
         """
         if ax == None:
@@ -136,6 +138,8 @@ class CDataTimeSeries:
             verticalalignment='center', transform=ax.transAxes, \
             fontsize = 12, fontweight = 'bold', \
             bbox=dict(facecolor='white', alpha=1.0, edgecolor='None'))
+        if use_scientific_notation:
+            ax.ticklabel_format(style='scientific', axis='y', scilimits=(0,3))
         plt.legend()
         if show_plot:
             plt.show()
@@ -168,7 +172,7 @@ class CDataTimeSeriesCollection:
             else:
                 show_x_label=False
             ax = fh.add_subplot(subplot_str+str(ix+1))
-            data.plot_time_series(ax=ax,show_plot=False, show_xlabel=show_x_label)
+            data.plot_time_series(ax=ax,show_plot=False, show_xlabel=show_x_label, use_scientific_notation=True)
         plt.show()
 
     def plot_country_comparison(self, country_name_1, country_name_2, ax=None, show_plot=False):
