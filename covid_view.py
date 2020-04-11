@@ -145,13 +145,13 @@ class CDataTimeSeriesCollectionView:
 
         ixs1,ixe1 = ds1._get_time_range_indices(start_date=from_date, end_date=to_date)
         ixs2,ixe2 = ds2._get_time_range_indices(start_date=from_date, end_date=to_date)
-        ax.plot(ds1.days[ixs1:ixe1],ds1.n_confirmed[ixs1:ixe1],color='red',label=ds1.country+' confirmed')
+        ax.plot(ds1.days[ixs1:ixe1],ds1.n_confirmed[ixs1:ixe1],color='red', linewidth=2, label=ds1.country+' confirmed')
         ax.plot(ds2.days[ixs2:ixe2],ds2.n_confirmed[ixs2:ixe2],color='darkred', linestyle='-.', label=ds2.country+' confirmed')
-        ax.plot(ds1.days[ixs1:ixe1],ds1.n_recovered[ixs1:ixe1],color='green',label=ds1.country+' recovered')
+        ax.plot(ds1.days[ixs1:ixe1],ds1.n_recovered[ixs1:ixe1],color='green', linewidth=2, label=ds1.country+' recovered')
         ax.plot(ds2.days[ixs2:ixe2],ds2.n_recovered[ixs2:ixe2],color='darkgreen', linestyle='-.', label=ds2.country+' recovered')
-        ax.plot(ds1.days[ixs1:ixe1],ds1.n_deaths[ixs1:ixe1],color='darkgrey',label=ds1.country+' deaths')
+        ax.plot(ds1.days[ixs1:ixe1],ds1.n_deaths[ixs1:ixe1],color='darkgrey', linewidth=2, label=ds1.country+' deaths')
         ax.plot(ds2.days[ixs2:ixe2],ds2.n_deaths[ixs2:ixe2],color='black', linestyle='-.', label=ds2.country+' deaths')
-        ax.plot(ds1.days[ixs1:ixe1],ds1.n_still_infected[ixs1:ixe1],color='blue',label=ds1.country+' still infected')
+        ax.plot(ds1.days[ixs1:ixe1],ds1.n_still_infected[ixs1:ixe1],color='blue', linewidth=2, label=ds1.country+' still infected')
         ax.plot(ds2.days[ixs2:ixe2],ds2.n_still_infected[ixs2:ixe2],color='darkblue', linestyle='-.', label=ds2.country+' still infected')
 
         ax.grid(True)

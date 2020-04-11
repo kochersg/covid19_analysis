@@ -4,6 +4,7 @@ Doc-Classes of the doc-view model based approach.
 import numpy as np 
 import matplotlib.pyplot as plt
 from datetime import datetime as dt
+from datetime import timedelta as tdelta
 from collections import namedtuple
 from logzero import logger
 
@@ -47,7 +48,8 @@ class CDataTimeSeries:
         xlabel 'Date' is plotted (useful for many staggered subplots)
 
     """
-    def __init__(self, country='Germany'):
+    def __init__(self, country='Germany', sim_data=False, infrate_dict={'30':1.38, '31':1.37, '35':1.3, '40': 1.22}, \
+        mortality=0.01, days_to_recovery=14, extrapolate_to_date=None):
         """
         Parameter
         ---------
@@ -58,11 +60,25 @@ class CDataTimeSeries:
         self.country = country
         self.latitude = None
         self.longitude = None
+        self.sim_data = sim_data
+        self.sim_infrate_dict = infrate_dict
+        self.sim_mortality = mortality
+        self.sim_days_to_recovery = days_to_recovery
+        self.sim_extrapolate_to_date = extrapolate_to_date
         self.days = []
-        self.n_confirmed = self.__read_csv_data(self.fname.confirmed)        
-        self.n_deaths = self.__read_csv_data(self.fname.deaths)
-        self.n_recovered = self.__read_csv_data(self.fname.recovered)
+        # load one data set to fill self.days
+        self.n_confirmed = self.__read_csv_data(self.fname.confirmed)       
+        if not self.sim_data:
+            self.n_confirmed = self.__read_csv_data(self.fname.confirmed)       
+            self.n_deaths = self.__read_csv_data(self.fname.deaths)
+            self.n_recovered = self.__read_csv_data(self.fname.recovered)
+        else:
+            if self.sim_extrapolate_to_date!=None:
+                self.__extend_days_to_date()
+            self.__sim_data()
+
         self.n_still_infected = self.n_confirmed-self.n_deaths-self.n_recovered
+        self.n_still_infected[self.n_still_infected<0]=0
 
     def _get_time_range_indices(self, start_date=None, end_date=None):
         """Retrieve start index and end index of a time range in self.days
@@ -92,7 +108,35 @@ class CDataTimeSeries:
         else:
             ix_end=len(days)
         return(ix_start,ix_end)
-        
+
+    def __extend_days_to_date(self):
+        while True:
+            if self.days[-1]<self.sim_extrapolate_to_date:
+                self.days.append(self.days[-1]+tdelta(days=1))
+            else:
+                break
+
+    def __sim_data(self):
+        self.n_confirmed=np.zeros((len(self.days),1))
+        self.n_recovered=np.zeros((len(self.days),1))
+        self.n_deaths=np.zeros((len(self.days),1))
+        self.n_confirmed[0]=1
+        for ix in range(len(self.days)-1):
+            day=ix+1
+            inf_rate = self.__get_inf_rate_from_dict(day)
+            self.n_confirmed[day]=(self.n_confirmed[day-1])*inf_rate
+            if day >= self.sim_days_to_recovery:
+                self.n_deaths[day]=self.n_confirmed[day-self.sim_days_to_recovery]*self.sim_mortality
+                self.n_recovered[day]=self.n_confirmed[day-self.sim_days_to_recovery]*(1-self.sim_mortality)
+
+    def __get_inf_rate_from_dict(self, day):
+        dict_days=[int(d_str) for d_str in self.sim_infrate_dict.keys()]
+        # print(dict_days)
+        for d_day in dict_days:
+            if day <= d_day:
+                return(self.sim_infrate_dict[str(d_day)])
+        return(self.sim_infrate_dict[list(self.sim_infrate_dict.keys())[-1]])
+       
 
     def __read_csv_data(self,fname):
         try:
@@ -126,9 +170,11 @@ class CDataTimeSeries:
                 day_time=dt.strptime(day_str[:-1],'%m/%d/%y')
             self.days.append(day_time)
 
+
+
 class CDataTimeSeriesCollection:
     def __init__(self, country_list):
-        self.country_list=country_list
+        self.country_list=list(country_list)
         self.data_collection=[]
         self._collect_data_for_selected_countries()
 
@@ -141,6 +187,10 @@ class CDataTimeSeriesCollection:
             if ds.country==c_name:
                 return(ds)
         return(None)
+
+    def add_data_times_series_to_collection(self, ds):
+        self.country_list.append(ds.country)
+        self.data_collection.append(ds)
             
 
 if __name__ == "__main__":
