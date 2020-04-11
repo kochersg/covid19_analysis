@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     # plot time series data of a single country
     single_country = CDataTimeSeries(country = 'Germany')
-    single_country_view = CDataTimeSeriesView(cv_data=single_country)
+    single_country_view = CDataTimeSeriesView(cv_data=None)
     single_country_view.plot_time_series(show_plot=True, from_date=from_date, to_date=to_date)
     
     # load data of several countries into a collection

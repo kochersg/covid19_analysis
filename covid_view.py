@@ -56,6 +56,9 @@ class CDataTimeSeriesView:
             controls the end date for plotting (default is None)
 
         """
+        if self.cv_data==None:
+            logger.warning("No data available, initialize self.cv_data with CDataTimeSeries object")
+            return
         if ax == None:
             fh=plt.figure(figsize = [10,8])
             ax=fh.add_subplot(111)
@@ -80,10 +83,31 @@ class CDataTimeSeriesView:
             plt.show()
 
 class CDataTimeSeriesCollectionView:
+    """
+    Class representing and plotting collections of time series data.
+    ...
+    Attributes
+    ----------
+    cv_data_collection : CDataTimeSeriesCollection object of the doc-class
+
+    Methods
+    -------
+    plot_collection_subplots(from_date=None, to_date=None)
+        Plots the time series data for a set of selected countries. 
+    """
     def __init__(self, cv_data_collection=None):
+        """
+        Parameter
+        ---------
+        cv_data_collection : CDataTimeSeriesCollection, optional
+            Time series to plot data from (default is None)
+        """
         self.cv_data_collection=cv_data_collection
 
     def plot_collection_subplots(self, from_date=None, to_date=None):
+        if self.cv_data_collection==None:
+            logger.warning("No collection available, initialize self.cv_data_collection with CDataTimeSeriesCollection object")
+            return
         if len(self.cv_data_collection.country_list)<2:
             subplot_str='11'
         elif len(self.cv_data_collection.country_list)<3:
@@ -107,6 +131,9 @@ class CDataTimeSeriesCollectionView:
         plt.show()
 
     def plot_country_comparison(self, country_name_1, country_name_2, ax=None, show_plot=False, from_date=None, to_date=None):
+        if self.cv_data_collection==None:
+            logger.warning("No collection available, initialize self.cv_data_collection with CDataTimeSeriesCollection object")
+            return
         ds1=self.cv_data_collection._get_data_from_country_name(country_name_1)
         ds2=self.cv_data_collection._get_data_from_country_name(country_name_2)
         if not ds1 or not ds2:
