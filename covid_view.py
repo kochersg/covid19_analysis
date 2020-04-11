@@ -60,7 +60,6 @@ class CDataTimeSeriesView:
             fh=plt.figure(figsize = [10,8])
             ax=fh.add_subplot(111)
         ixs,ixe = self.cv_data._get_time_range_indices(start_date=from_date, end_date=to_date)
-        print(ixs,ixe)
         ax.plot(self.cv_data.days[ixs:ixe], self.cv_data.n_confirmed[ixs:ixe], color='red', label='total confirmed')
         ax.plot(self.cv_data.days[ixs:ixe], self.cv_data.n_recovered[ixs:ixe], color='green', label='total recovered')
         ax.plot(self.cv_data.days[ixs:ixe], self.cv_data.n_deaths[ixs:ixe], color='black', label='total deaths')
@@ -84,7 +83,7 @@ class CDataTimeSeriesCollectionView:
     def __init__(self, cv_data_collection=None):
         self.cv_data_collection=cv_data_collection
 
-    def plot_collection_subplots(self):
+    def plot_collection_subplots(self, from_date=None, to_date=None):
         if len(self.cv_data_collection.country_list)<2:
             subplot_str='11'
         elif len(self.cv_data_collection.country_list)<3:
@@ -103,10 +102,11 @@ class CDataTimeSeriesCollectionView:
                 show_x_label=False
             ax = fh.add_subplot(subplot_str+str(ix+1))
             data_view = CDataTimeSeriesView(cv_data=data)
-            data_view.plot_time_series(ax=ax,show_plot=False, show_xlabel=show_x_label, use_scientific_notation=True)
+            data_view.plot_time_series(ax=ax,show_plot=False, show_xlabel=show_x_label, use_scientific_notation=True, \
+                from_date=from_date, to_date=to_date)
         plt.show()
 
-    def plot_country_comparison(self, country_name_1, country_name_2, ax=None, show_plot=False):
+    def plot_country_comparison(self, country_name_1, country_name_2, ax=None, show_plot=False, from_date=None, to_date=None):
         ds1=self.cv_data_collection._get_data_from_country_name(country_name_1)
         ds2=self.cv_data_collection._get_data_from_country_name(country_name_2)
         if not ds1 or not ds2:
@@ -115,15 +115,17 @@ class CDataTimeSeriesCollectionView:
         if ax==None:
             fh=plt.figure(figsize=(10,7))
             ax=fh.add_subplot(111)
-        
-        ax.plot(ds1.days,ds1.n_confirmed,color='red',label=ds1.country+' confirmed')
-        ax.plot(ds2.days,ds2.n_confirmed,color='darkred', linestyle='-.', label=ds2.country+' confirmed')
-        ax.plot(ds1.days,ds1.n_recovered,color='green',label=ds1.country+' recovered')
-        ax.plot(ds2.days,ds2.n_recovered,color='darkgreen', linestyle='-.', label=ds2.country+' recovered')
-        ax.plot(ds1.days,ds1.n_deaths,color='darkgrey',label=ds1.country+' deaths')
-        ax.plot(ds2.days,ds2.n_deaths,color='black', linestyle='-.', label=ds2.country+' deaths')
-        ax.plot(ds1.days,ds1.n_still_infected,color='blue',label=ds1.country+' still infected')
-        ax.plot(ds2.days,ds2.n_still_infected,color='darkblue', linestyle='-.', label=ds2.country+' still infected')
+
+        ixs1,ixe1 = ds1._get_time_range_indices(start_date=from_date, end_date=to_date)
+        ixs2,ixe2 = ds2._get_time_range_indices(start_date=from_date, end_date=to_date)
+        ax.plot(ds1.days[ixs1:ixe1],ds1.n_confirmed[ixs1:ixe1],color='red',label=ds1.country+' confirmed')
+        ax.plot(ds2.days[ixs2:ixe2],ds2.n_confirmed[ixs2:ixe2],color='darkred', linestyle='-.', label=ds2.country+' confirmed')
+        ax.plot(ds1.days[ixs1:ixe1],ds1.n_recovered[ixs1:ixe1],color='green',label=ds1.country+' recovered')
+        ax.plot(ds2.days[ixs2:ixe2],ds2.n_recovered[ixs2:ixe2],color='darkgreen', linestyle='-.', label=ds2.country+' recovered')
+        ax.plot(ds1.days[ixs1:ixe1],ds1.n_deaths[ixs1:ixe1],color='darkgrey',label=ds1.country+' deaths')
+        ax.plot(ds2.days[ixs2:ixe2],ds2.n_deaths[ixs2:ixe2],color='black', linestyle='-.', label=ds2.country+' deaths')
+        ax.plot(ds1.days[ixs1:ixe1],ds1.n_still_infected[ixs1:ixe1],color='blue',label=ds1.country+' still infected')
+        ax.plot(ds2.days[ixs2:ixe2],ds2.n_still_infected[ixs2:ixe2],color='darkblue', linestyle='-.', label=ds2.country+' still infected')
 
         ax.grid(True)
         ax.set_xlabel('Date')

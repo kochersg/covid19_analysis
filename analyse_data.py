@@ -21,16 +21,24 @@ from covid_view import CDataTimeSeriesView, CDataTimeSeriesCollectionView
 from datetime import datetime as dt
 
 if __name__ == "__main__":
+
+    # select time range for plotting
+    from_date = dt(2020,3,1)
+    to_date = None
+
     # plot time series data of a single country
     single_country = CDataTimeSeries(country = 'Germany')
     single_country_view = CDataTimeSeriesView(cv_data=single_country)
-    single_country_view.plot_time_series(show_plot=True, from_date=dt(2020,3,1))
+    single_country_view.plot_time_series(show_plot=True, from_date=from_date, to_date=to_date)
+    
     # load data of several countries into a collection
     countries=('Germany','Italy','Spain','United Kingdom','France','Austria')
     dc = CDataTimeSeriesCollection(countries)
     dc_view = CDataTimeSeriesCollectionView(cv_data_collection=dc)
+    
     # plot the collection data into a graph with one subplot per country   
-    dc_view.plot_collection_subplots()
+    dc_view.plot_collection_subplots(from_date=from_date, to_date=to_date)
+    
     # plot a comparison between the timeseries of two different countries into one plot
-    dc_view.plot_country_comparison('Germany','Italy',show_plot=True)
+    dc_view.plot_country_comparison('Germany','Italy',show_plot=True, from_date=from_date, to_date=to_date)
     

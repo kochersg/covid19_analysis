@@ -78,7 +78,6 @@ class CDataTimeSeries:
         if start_date!=None:
             try:
                 ix_start = np.where(days>=start_date)[0][0]
-                print(ix_start)
             except IndexError:
                 logger.warn("Start date not found, using first date")
                 ix_start = 0
