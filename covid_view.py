@@ -5,6 +5,7 @@ View-Classes of the doc-view model based approach.
 from covid_doc import CDataTimeSeries, CDataTimeSeriesCollection
 import numpy as np 
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 from datetime import datetime as dt
 from collections import namedtuple
 from logzero import logger
@@ -78,6 +79,22 @@ class CDataTimeSeriesView:
             bbox=dict(facecolor='white', alpha=1.0, edgecolor='None'))
         if use_scientific_notation:
             ax.ticklabel_format(style='scientific', axis='y', scilimits=(0,3))
+
+        # format the ticks
+        months = mdates.MonthLocator()   # every month
+        days = mdates.DayLocator()  # every day
+        months_fmt = mdates.DateFormatter('%b')
+        ax.xaxis.set_major_locator(months)
+        ax.xaxis.set_major_formatter(months_fmt)
+        ax.xaxis.set_minor_locator(days)
+
+        # format the coords message box
+        ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
+
+        # rotates and right aligns the x labels, and moves the bottom of the
+        # axes up to make room for them
+        plt.gcf().autofmt_xdate()
+
         plt.legend()
         if show_plot:
             plt.show()
@@ -118,12 +135,13 @@ class CDataTimeSeriesCollectionView:
             subplot_str='32'
         elif len(self.cv_data_collection.country_list)<10:
             subplot_str='33'
-        fh = plt.figure(figsize=(15,10))
+        fh = plt.figure(figsize=(14,10))
         for ix, data in enumerate(self.cv_data_collection.data_collection):
-            if ix>int(subplot_str[0])*(int(subplot_str[1])-1):
-                show_x_label=True
-            else:
-                show_x_label=False
+            # if ix>int(subplot_str[0])*(int(subplot_str[1])-1):
+            #     show_x_label=True
+            # else:
+            #     show_x_label=False
+            show_x_label=True
             ax = fh.add_subplot(subplot_str+str(ix+1))
             data_view = CDataTimeSeriesView(cv_data=data)
             data_view.plot_time_series(ax=ax,show_plot=False, show_xlabel=show_x_label, use_scientific_notation=True, \
@@ -162,6 +180,21 @@ class CDataTimeSeriesCollectionView:
             verticalalignment='center', transform=ax.transAxes, \
             fontsize = 12, fontweight = 'bold', \
             bbox=dict(facecolor='white', alpha=1.0, edgecolor='None'))
+
+        # format the ticks
+        months = mdates.MonthLocator()   # every month
+        days = mdates.DayLocator()  # every day
+        months_fmt = mdates.DateFormatter('%b')
+        ax.xaxis.set_major_locator(months)
+        ax.xaxis.set_major_formatter(months_fmt)
+        ax.xaxis.set_minor_locator(days)
+
+        # format the coords message box
+        ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
+
+        # rotates and right aligns the x labels, and moves the bottom of the
+        # axes up to make room for them
+        plt.gcf().autofmt_xdate()
 
         if show_plot:
             plt.show()        
