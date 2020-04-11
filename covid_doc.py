@@ -64,6 +64,37 @@ class CDataTimeSeries:
         self.n_recovered = self.__read_csv_data(self.fname.recovered)
         self.n_still_infected = self.n_confirmed-self.n_deaths-self.n_recovered
 
+    def _get_time_range_indices(self, start_date=None, end_date=None):
+        """Retrieve start index and end index of a time range in self.days
+        Parameter
+        ---------
+        start_date : datetime object, optional
+            Start date of time range (default is None). In case of start_date=None the first index is 0.
+        end_date: datetime object, optional
+            End date of the time range (default is None). In case of end_data=None the second index is the
+            one of the last data point
+        """
+        days = np.array(self.days)
+        if start_date!=None:
+            try:
+                ix_start = np.where(days>=start_date)[0][0]
+                print(ix_start)
+            except IndexError:
+                logger.warn("Start date not found, using first date")
+                ix_start = 0
+        else:
+            ix_start = 0
+        if end_date!=None:
+            try:
+                ix_end=np.where(days>=end_date)[0][0]
+            except IndexError:
+                logger.warn("End date not found, using last date")
+                ix_end = len(days)
+        else:
+            ix_end=len(days)
+        return(ix_start,ix_end)
+        
+
     def __read_csv_data(self,fname):
         try:
             with open(fname,'rt') as fh:

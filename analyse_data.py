@@ -18,12 +18,13 @@ Visualization is achieved by the views classes in covid_view
 """
 from covid_doc import CDataTimeSeries, CDataTimeSeriesCollection
 from covid_view import CDataTimeSeriesView, CDataTimeSeriesCollectionView
+from datetime import datetime as dt
 
 if __name__ == "__main__":
     # plot time series data of a single country
     single_country = CDataTimeSeries(country = 'Germany')
     single_country_view = CDataTimeSeriesView(cv_data=single_country)
-    single_country_view.plot_time_series(show_plot=True)
+    single_country_view.plot_time_series(show_plot=True, from_date=dt(2020,3,1))
     # load data of several countries into a collection
     countries=('Germany','Italy','Spain','United Kingdom','France','Austria')
     dc = CDataTimeSeriesCollection(countries)

@@ -35,7 +35,8 @@ class CDataTimeSeriesView:
         """
         self.cv_data = cv_data
 
-    def plot_time_series(self, ax=None, show_plot=False, show_xlabel=True, use_scientific_notation=False):
+    def plot_time_series(self, ax=None, show_plot=False, show_xlabel=True, use_scientific_notation=False, \
+        from_date=None,to_date=None):
         """Plots the time series of the selected country
 
         Parameters
@@ -49,15 +50,21 @@ class CDataTimeSeriesView:
             controls if the x-label 'Date' is plotted (default is True)
         use_scientific_notation : boolean, optional
             controls if the y-axis is plotted in scientific notatiom 1e... (default is False)
+        from_date : datetime object, optional
+            controls the start date for plotting (default is None)
+        to_date : datetime object, optional
+            controls the end date for plotting (default is None)
 
         """
         if ax == None:
             fh=plt.figure(figsize = [10,8])
             ax=fh.add_subplot(111)
-        ax.plot(self.cv_data.days, self.cv_data.n_confirmed, color='red', label='total confirmed')
-        ax.plot(self.cv_data.days, self.cv_data.n_recovered, color='green', label='total recovered')
-        ax.plot(self.cv_data.days, self.cv_data.n_deaths, color='black', label='total deaths')
-        ax.plot(self.cv_data.days, self.cv_data.n_still_infected, \
+        ixs,ixe = self.cv_data._get_time_range_indices(start_date=from_date, end_date=to_date)
+        print(ixs,ixe)
+        ax.plot(self.cv_data.days[ixs:ixe], self.cv_data.n_confirmed[ixs:ixe], color='red', label='total confirmed')
+        ax.plot(self.cv_data.days[ixs:ixe], self.cv_data.n_recovered[ixs:ixe], color='green', label='total recovered')
+        ax.plot(self.cv_data.days[ixs:ixe], self.cv_data.n_deaths[ixs:ixe], color='black', label='total deaths')
+        ax.plot(self.cv_data.days[ixs:ixe], self.cv_data.n_still_infected[ixs:ixe], \
             color='blue', linewidth=2, label='still infected')
         ax.grid(True)
         if show_xlabel:
