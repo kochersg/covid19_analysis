@@ -81,12 +81,47 @@ class CDataTimeSeries:
         self.n_still_infected[self.n_still_infected<0]=0
 
     def _calc_doubling_time_on_date(self, date:dt, average_interval_days:int=1):
+        """Calculates the time interval needed to double the number of confirmed cases
+
+        Parameters
+        ----------
+        date : datetime object, optional
+            date to calculate the doubling time for (default is None)
+        average_interval_days : int, optional
+            sets the number of days to look back into past from given date. Returned value
+            is the average value over the selected time range (defaul is 1)
+
+        """
+
         ixs, ixe = self._get_time_range_indices(start_date=date-tdelta(days=average_interval_days),end_date=date)
         nc2 = self.n_confirmed[ixe]
         nc1 = self.n_confirmed[ixs]
         daily_increase_rate = 1+(nc2/nc1-1)/average_interval_days
         return(np.log(2)/np.log(daily_increase_rate))
         
+
+    def _calc_doubling_time_over_interval(self, start_date:dt=None, end_date:dt=None, average_interval_days:int=1):
+        """Calculates the time interval needed to double the number of confirmed cases
+        over a given time range from start_date to end_date
+
+        Parameters
+        ----------
+        start_date : datetime object, optional
+            Start date of the time interval to calculate the doubling time for (default is None)
+        end_date : datetime object, optional
+            Start date of the time interval to calculate the doubling time for (default is None)
+        average_interval_days : int, optional
+            sets the number of days to look back into past from given date. Returned value
+            is the average value over the selected time range (defaul is 1)
+
+        """
+
+        ixs, ixe = self._get_time_range_indices(start_date=start_date, end_date=end_date)
+        double_t=[]
+        for day in self.days[ixs:ixe]:
+            double_t.append(self._calc_doubling_time_on_date(day,average_interval_days=average_interval_days))
+        return(np.array(double_t))
+
 
     def _get_time_range_indices(self, start_date=None, end_date=None):
         """Retrieve start index and end index of a time range in self.days

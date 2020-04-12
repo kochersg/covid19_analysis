@@ -36,7 +36,7 @@ class CDataTimeSeriesView:
         """
         self.cv_data = cv_data
 
-    def plot_time_series(self, ax=None, show_plot=False, show_xlabel=True, use_scientific_notation=False, \
+    def plot_time_series(self, ax:plt.axes=None, show_plot:bool=False, show_xlabel:bool=True, use_scientific_notation:bool=False, \
         from_date:dt=None,to_date:dt=None):
         """Plots the time series of the selected country
 
@@ -79,27 +79,13 @@ class CDataTimeSeriesView:
             bbox=dict(facecolor='white', alpha=1.0, edgecolor='None'))
         if use_scientific_notation:
             ax.ticklabel_format(style='scientific', axis='y', scilimits=(0,3))
-
-        # format the ticks
-        months = mdates.MonthLocator()   # every month
-        days = mdates.DayLocator()  # every day
-        months_fmt = mdates.DateFormatter('%b')
-        ax.xaxis.set_major_locator(months)
-        ax.xaxis.set_major_formatter(months_fmt)
-        ax.xaxis.set_minor_locator(days)
-
-        # format the coords message box
-        ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
-
-        # rotates and right aligns the x labels, and moves the bottom of the
-        # axes up to make room for them
-        plt.gcf().autofmt_xdate()
-
+        self._nicely_format_date_ticks(ax)
         plt.legend()
         if show_plot:
             plt.show()
 
-    def plot_doubling_time_over_days(self, ax=None, show_plot=True, from_date:dt=None, to_date:dt=None, \
+
+    def plot_doubling_time_over_days(self, ax:plt.axes=None, show_plot:bool=True, from_date:dt=None, to_date:dt=None, \
         average_interval_days:int=1):
         """Plots the time interval needed to double the number of confirmed cases for the selected country
 
@@ -119,16 +105,14 @@ class CDataTimeSeriesView:
             is the average value over the selected time range
 
         """
-
-        ixs, ixe = self.cv_data._get_time_range_indices(start_date=from_date, end_date=to_date)
         if ax == None:
             fh=plt.figure(figsize = [10,8])
             ax=fh.add_subplot(111)
-        double_t=[]
-        for day in self.cv_data.days[ixs:ixe]:
-            double_t.append(self.cv_data._calc_doubling_time_on_date(day,average_interval_days=average_interval_days))
 
-        ax.bar(self.cv_data.days[ixs:ixe], double_t, label='doubling time')
+        ixs,ixe = self.cv_data._get_time_range_indices(start_date=from_date,end_date=to_date)
+        ax.bar(self.cv_data.days[ixs:ixe], \
+            self.cv_data._calc_doubling_time_over_interval(start_date=from_date, end_date=to_date), \
+            label='doubling time')
 
         ax.grid(True)
         ax.set_xlabel('Date')
@@ -137,7 +121,14 @@ class CDataTimeSeriesView:
             verticalalignment='center', transform=ax.transAxes, \
             fontsize = 12, fontweight = 'bold', \
             bbox=dict(facecolor='white', alpha=1.0, edgecolor='None'))
+        self._nicely_format_date_ticks(ax)
+        plt.legend()
 
+        if show_plot:
+            plt.show()
+
+    @staticmethod
+    def _nicely_format_date_ticks(ax:plt.axes):
         # format the ticks
         months = mdates.MonthLocator()   # every month
         days = mdates.DayLocator()  # every day
@@ -152,12 +143,6 @@ class CDataTimeSeriesView:
         # rotates and right aligns the x labels, and moves the bottom of the
         # axes up to make room for them
         plt.gcf().autofmt_xdate()
-
-        plt.legend()
-
-        if show_plot:
-            plt.show()
-        
 
 class CDataTimeSeriesCollectionView:
     """
@@ -181,7 +166,7 @@ class CDataTimeSeriesCollectionView:
         """
         self.cv_data_collection=cv_data_collection
 
-    def plot_collection_subplots(self, from_date=None, to_date=None):
+    def plot_collection_subplots(self, from_date:dt=None, to_date:dt=None):
         if self.cv_data_collection==None:
             logger.warning("No collection available, initialize self.cv_data_collection with CDataTimeSeriesCollection object")
             return
@@ -208,7 +193,8 @@ class CDataTimeSeriesCollectionView:
                 from_date=from_date, to_date=to_date)
         plt.show()
 
-    def plot_country_comparison(self, country_name_1, country_name_2, ax=None, show_plot=False, from_date=None, to_date=None):
+    def plot_country_comparison(self, country_name_1:str, country_name_2:str, \
+        ax:plt.axes=None, show_plot:bool=False, from_date:dt=None, to_date:dt=None):
         if self.cv_data_collection==None:
             logger.warning("No collection available, initialize self.cv_data_collection with CDataTimeSeriesCollection object")
             return
@@ -240,24 +226,10 @@ class CDataTimeSeriesCollectionView:
             verticalalignment='center', transform=ax.transAxes, \
             fontsize = 12, fontweight = 'bold', \
             bbox=dict(facecolor='white', alpha=1.0, edgecolor='None'))
-
-        # format the ticks
-        months = mdates.MonthLocator()   # every month
-        days = mdates.DayLocator()  # every day
-        months_fmt = mdates.DateFormatter('%b')
-        ax.xaxis.set_major_locator(months)
-        ax.xaxis.set_major_formatter(months_fmt)
-        ax.xaxis.set_minor_locator(days)
-
-        # format the coords message box
-        ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
-
-        # rotates and right aligns the x labels, and moves the bottom of the
-        # axes up to make room for them
-        plt.gcf().autofmt_xdate()
+        CDataTimeSeries._nicely_format_date_ticks(ax)
 
         if show_plot:
-            plt.show()        
+            plt.show()    
 
 
 if __name__ == "__main__":
