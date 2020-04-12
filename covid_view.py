@@ -37,7 +37,7 @@ class CDataTimeSeriesView:
         self.cv_data = cv_data
 
     def plot_time_series(self, ax=None, show_plot=False, show_xlabel=True, use_scientific_notation=False, \
-        from_date=None,to_date=None):
+        from_date:dt=None,to_date:dt=None):
         """Plots the time series of the selected country
 
         Parameters
@@ -98,6 +98,69 @@ class CDataTimeSeriesView:
         plt.legend()
         if show_plot:
             plt.show()
+
+    def plot_doubling_time_over_days(self, ax=None, show_plot=True, from_date:dt=None, to_date:dt=None, \
+        average_interval_days:int=1):
+        """Plots the time interval needed to double the number of confirmed cases for the selected country
+
+        Parameters
+        ----------
+        ax : matplotlib.pyplot axes object, optional
+            axes object used for plotting, if not provided the function will create
+            a figure with axes (default is None)
+        show_plot : boolean, optional
+            controls if the plot is shown at the end of the method call (default is False)
+        from_date : datetime object, optional
+            controls the start date for plotting (default is None)
+        to_date : datetime object, optional
+            controls the end date for plotting (default is None)
+        average_interval_days : int, optional
+            sets the number of days to look back into past from given date. Returned value
+            is the average value over the selected time range
+
+        """
+
+        ixs, ixe = self.cv_data._get_time_range_indices(start_date=from_date, end_date=to_date)
+        if ax == None:
+            fh=plt.figure(figsize = [10,8])
+            ax=fh.add_subplot(111)
+        double_t=[]
+        for day in self.cv_data.days[ixs:ixe]:
+            double_t.append(self.cv_data._calc_doubling_time_on_date(day,average_interval_days=average_interval_days))
+
+        ax.bar(self.cv_data.days[ixs:ixe], double_t, label='doubling time')
+
+        ax.grid(True)
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Doubling time (days)')
+        ax.text(0.5, 0.9, self.cv_data.country, horizontalalignment='center', \
+            verticalalignment='center', transform=ax.transAxes, \
+            fontsize = 12, fontweight = 'bold', \
+            bbox=dict(facecolor='white', alpha=1.0, edgecolor='None'))
+
+        # format the ticks
+        months = mdates.MonthLocator()   # every month
+        days = mdates.DayLocator()  # every day
+        months_fmt = mdates.DateFormatter('%b')
+        ax.xaxis.set_major_locator(months)
+        ax.xaxis.set_major_formatter(months_fmt)
+        ax.xaxis.set_minor_locator(days)
+
+        # format the coords message box
+        ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
+
+        # rotates and right aligns the x labels, and moves the bottom of the
+        # axes up to make room for them
+        plt.gcf().autofmt_xdate()
+
+        plt.legend()
+
+        if show_plot:
+            plt.show()
+        
+
+
+
 
 class CDataTimeSeriesCollectionView:
     """

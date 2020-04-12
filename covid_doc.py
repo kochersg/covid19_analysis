@@ -80,6 +80,14 @@ class CDataTimeSeries:
         self.n_still_infected = self.n_confirmed-self.n_deaths-self.n_recovered
         self.n_still_infected[self.n_still_infected<0]=0
 
+    def _calc_doubling_time_on_date(self, date:dt, average_interval_days:int=1):
+        ixs, ixe = self._get_time_range_indices(start_date=date-tdelta(days=average_interval_days),end_date=date)
+        nc2 = self.n_confirmed[ixe]
+        nc1 = self.n_confirmed[ixs]
+        daily_increase_rate = 1+(nc2/nc1-1)/average_interval_days
+        return(np.log(2)/np.log(daily_increase_rate))
+        
+
     def _get_time_range_indices(self, start_date=None, end_date=None):
         """Retrieve start index and end index of a time range in self.days
         Parameter
