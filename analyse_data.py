@@ -48,5 +48,5 @@ if __name__ == "__main__":
     dc_view.plot_country_comparison('Germany','Germany Sim',show_plot=True, from_date=from_date, to_date=to_date)
     
     # plot the progress of the doubling time
-    german_view = CDataTimeSeriesView(dc._get_data_from_country_name('Germany'))
-    german_view.plot_doubling_time_over_days(from_date=dt(2020,3,1),average_interval_days=1)
+    c_view = CDataTimeSeriesView(dc._get_data_from_country_name('Germany'))
+    c_view.plot_doubling_time_over_days(from_date=dt(2020,3,1),average_interval_days=1)

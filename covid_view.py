@@ -27,7 +27,7 @@ class CDataTimeSeriesView:
         xlabel 'Date' is plotted (useful for many staggered subplots)
 
     """
-    def __init__(self, cv_data=None):
+    def __init__(self, cv_data:CDataTimeSeries=None):
         """
         Parameter
         ---------
@@ -159,9 +159,6 @@ class CDataTimeSeriesView:
             plt.show()
         
 
-
-
-
 class CDataTimeSeriesCollectionView:
     """
     Class representing and plotting collections of time series data.
@@ -175,7 +172,7 @@ class CDataTimeSeriesCollectionView:
     plot_collection_subplots(from_date=None, to_date=None)
         Plots the time series data for a set of selected countries. 
     """
-    def __init__(self, cv_data_collection=None):
+    def __init__(self, cv_data_collection:CDataTimeSeriesCollection=None):
         """
         Parameter
         ---------
