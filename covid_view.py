@@ -226,7 +226,7 @@ class CDataTimeSeriesCollectionView:
             verticalalignment='center', transform=ax.transAxes, \
             fontsize = 12, fontweight = 'bold', \
             bbox=dict(facecolor='white', alpha=1.0, edgecolor='None'))
-        CDataTimeSeries._nicely_format_date_ticks(ax)
+        CDataTimeSeriesView._nicely_format_date_ticks(ax)
 
         if show_plot:
             plt.show()    
