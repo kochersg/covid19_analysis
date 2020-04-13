@@ -4,7 +4,7 @@ Doc-Classes of the doc-view model based approach.
 import numpy as np 
 from datetime import datetime as dt
 from datetime import timedelta as tdelta
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 from logzero import logger
 
 CFnames = namedtuple('fnames',['confirmed','recovered','deaths'], \
@@ -120,6 +120,8 @@ class CDataTimeSeries:
             is the average value over the selected time range (defaul is 1)
 
         """
+        if date==None:
+            date = self.days[-1]
         ixs, ixe = self._get_time_range_indices(start_date=date-tdelta(days=average_interval_days),end_date=date)
         nc2 = self.n_confirmed[ixe]
         nc1 = self.n_confirmed[ixs]
@@ -314,6 +316,14 @@ class CDataTimeSeriesCollection:
         self.country_list.append(ds.country)
         self.data_collection.append(ds)
             
+    def _get_actual_doubling_time_for_date(self, date=None, average_interval_days=1)->OrderedDict:
+        dt_dict=dict()
+        for ds in self.data_collection:
+            dt_dict[ds.country]=ds._calc_doubling_time_on_date(date=date, average_interval_days=1)
+        sorted_dt = sorted(dt_dict.items(), key=lambda kv: kv[1], reverse=True)
+        dt_dict_sorted = OrderedDict(sorted_dt)
+        return(dt_dict_sorted)
+
 
 if __name__ == "__main__":
     pass

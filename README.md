@@ -46,4 +46,7 @@ You need to have the following modules installed:
 ### Comparison of data set and simulation 
 ![alt text](./example_images/Compare_CDataTimeSeriesObjects.png "Two selected data sets of a collection into a single plot")
 
+### Doubling time for a given date 
+![alt text](./example_images/doubling_time_collection.png "Sorted doubling time for given date and collection")
+
 

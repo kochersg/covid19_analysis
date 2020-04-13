@@ -264,7 +264,27 @@ class CDataTimeSeriesCollectionView:
         CDataTimeSeriesView._nicely_format_date_ticks(ax)
 
         if show_plot:
-            plt.show()    
+            plt.show()
+
+    def plot_doubling_time_from_date_as_bar_chart(self, ax:plt.axes=None, show_plot:bool=True, \
+        date:dt=None, average_interval_days:int=1):
+        if ax==None:
+            fh=plt.figure(figsize=(10,7))
+            ax=fh.add_subplot(111)
+        dt_dict = self.cv_data_collection._get_actual_doubling_time_for_date(date=date, average_interval_days=average_interval_days)
+        ax.bar(*zip(*dt_dict.items()), facecolor='darkgray', edgecolor='black')
+        ax.set_ylabel('Doubling time (days)')
+        ax.grid(True, which='both', axis='y')
+
+        if date==None:
+            date = self.cv_data_collection.data_collection[0].days[-1]
+        ax.text(0.75, 0.9, date.strftime('%d-%b-%Y'), horizontalalignment='center', \
+            verticalalignment='center', transform=ax.transAxes, \
+            fontsize = 12, fontweight = 'bold', \
+            bbox=dict(facecolor='white', alpha=1.0, edgecolor='None'))
+
+        if show_plot:
+            plt.show()
 
 
 if __name__ == "__main__":
