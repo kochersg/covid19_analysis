@@ -26,6 +26,12 @@ The classes in `covid_view.py` are used to visualize the data of the doc-classes
 * `CTimeSeriesDataCollectionView`
 are available
 
+## Dependencies
+You need to have the following modules installed:
+* `matplotlib`
+* `numpy`
+* `logzero`
+
 ## Examples
 
 ### Single data set

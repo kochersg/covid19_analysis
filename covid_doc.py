@@ -2,7 +2,6 @@
 Doc-Classes of the doc-view model based approach. 
 """
 import numpy as np 
-import matplotlib.pyplot as plt
 from datetime import datetime as dt
 from datetime import timedelta as tdelta
 from collections import namedtuple

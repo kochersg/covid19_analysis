@@ -21,9 +21,6 @@ from covid_view import CDataTimeSeriesView, CDataTimeSeriesCollectionView
 from datetime import datetime as dt
 
 
-
-
-
 if __name__ == "__main__":
 
     # select time range for plotting
