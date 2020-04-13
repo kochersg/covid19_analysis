@@ -26,6 +26,11 @@ class CDataTimeSeriesView:
         command is called and the plot is shown. Argument show_xlabel controls, if the
         xlabel 'Date' is plotted (useful for many staggered subplots)
 
+    plot_doubling_time_over_days(self, ax:plt.axes=None, show_plot:bool=True,...
+            from_date:dt=None, to_date:dt=None,average_interval_days:int=1)
+        Plots the time interval needed to double the number of confirmed cases for the selected country
+)
+
     """
     def __init__(self, cv_data:CDataTimeSeries=None):
         """
@@ -103,7 +108,6 @@ class CDataTimeSeriesView:
         average_interval_days : int, optional
             sets the number of days to look back into past from given date. Returned value
             is the average value over the selected time range
-
         """
         if ax == None:
             fh=plt.figure(figsize = [10,8])
@@ -129,6 +133,13 @@ class CDataTimeSeriesView:
 
     @staticmethod
     def _nicely_format_date_ticks(ax:plt.axes):
+        """Nicely formats the date ticks for time series plots
+
+        Parameters
+        ----------
+        ax : matplotlib.pyplot axes object, optional
+            axes object used for plotting.
+        """
         # format the ticks
         months = mdates.MonthLocator()   # every month
         days = mdates.DayLocator()  # every day
@@ -136,10 +147,8 @@ class CDataTimeSeriesView:
         ax.xaxis.set_major_locator(months)
         ax.xaxis.set_major_formatter(months_fmt)
         ax.xaxis.set_minor_locator(days)
-
         # format the coords message box
         ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
-
         # rotates and right aligns the x labels, and moves the bottom of the
         # axes up to make room for them
         plt.gcf().autofmt_xdate()
@@ -167,6 +176,14 @@ class CDataTimeSeriesCollectionView:
         self.cv_data_collection=cv_data_collection
 
     def plot_collection_subplots(self, from_date:dt=None, to_date:dt=None):
+        """All time series data of a collection in a figure with subplots
+        Parameters
+        ----------
+        from_date : datetime object, optional
+            controls the start date for plotting (default is None)
+        to_date : datetime object, optional
+            controls the end date for plotting (default is None)
+        """
         if self.cv_data_collection==None:
             logger.warning("No collection available, initialize self.cv_data_collection with CDataTimeSeriesCollection object")
             return
@@ -195,6 +212,24 @@ class CDataTimeSeriesCollectionView:
 
     def plot_country_comparison(self, country_name_1:str, country_name_2:str, \
         ax:plt.axes=None, show_plot:bool=False, from_date:dt=None, to_date:dt=None):
+        """Plot the time series curves of two selected countries from a collection 
+        into one plot for comparison purposes. 
+        Parameters
+        ----------
+        country_name_1 : str
+            Name of the first country selected for compare
+        country_name_2 : str
+            Name of the second country selected for compare
+        from_date : datetime object, optional
+            controls the start date for plotting (default is None)
+        to_date : datetime object, optional
+            controls the end date for plotting (default is None)
+        ax : matplotlib.pyplot axes object, optional
+            axes object used for plotting, if not provided the function will create
+            a figure with axes (default is None)
+        show_plot : boolean, optional
+            controls if the plot is shown at the end of the method call (default is False)
+        """
         if self.cv_data_collection==None:
             logger.warning("No collection available, initialize self.cv_data_collection with CDataTimeSeriesCollection object")
             return

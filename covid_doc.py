@@ -38,24 +38,52 @@ class CDataTimeSeries:
         total number of deaths
     n_still_infected : numpy array of floats
         number of people who have not recovered or died, yet
-
+    sim_data : boolean, optional
+        data will be simulated by using the doubling_time_dict (default is False)
+    sim_mortality : float, optional
+        mortality (rate of people dying once confirmed) (default is 0.01)
+    sim_days_to_recovery: float, optional
+        time in days it takes to recover or die (default is 0.045)
+    sim_extrapolate_to_date : datetime.datetime, optional
+        used for simulation, if set to None only dates reported by CSSE will be taken
+        into account
+    
     Methods
     -------
-    plot_time_series(ax=None, show_plot=False, show_xlabel=True)
-        Plots the time series data for a selected country. If a matplotlib.pyplot axes-Object is
-        provided it will plot inside this axes. Argument show_plot controls if the pyplot.show() 
-        command is called and the plot is shown. Argument show_xlabel controls, if the
-        xlabel 'Date' is plotted (useful for many staggered subplots)
-
+        _calc_doubling_time_on_date(self, date:dt, average_interval_days:int=1):
+            Calculates the time interval needed to double the number of confirmed cases
+        _calc_doubling_time_over_interval(self, start_date:dt=None, end_date:dt=None, average_interval_days:int=1):
+            Calculates the time interval needed to double the number of confirmed cases
+            over a given time range from start_date to end_date
+        _get_doubling_time_dict_over_interval(self, start_date:dt=None, end_date:dt=None, average_interval_days:int=1):
+            Calculates the time interval needed to double the number of confirmed cases
+            over a given time range from start_date to end_date and returns it as dict.
+            Can be used as input for simulated data.
+        _get_time_range_indices(self, start_date=None, end_date=None):
+            Retrieve start index and end index of a time range in self.days
     """
-    def __init__(self, country='Germany', sim_data=False, \
+
+    def __init__(self, country:str='Germany', sim_data:bool=False, \
         doubling_time_dict={'2020-02-01':3, '2020-03-01':1.37, '2020-04-01':1.22}, \
-        mortality=0.01, days_to_recovery=14, extrapolate_to_date=None):
+        mortality:float=0.045, days_to_recovery:float=12.65, extrapolate_to_date:dt=None):
         """
         Parameter
         ---------
         country : str, optional
             country to plot data from (default 'Germany')
+        sim_data : boolean, optional
+            Flag indicating if time series set shall be simulated using doubling_time_dict
+            (default is False)
+        doubling_time_dict : dict, optional
+            dict with keys '%Y-%m-%d' formatted strings to indicate the date and float values with 
+            corresponding doubling times
+        mortality : float, optional
+            mortality (rate of people dying once confirmed) (default is 0.01)
+        days_to_recovery: float, optional
+            time in days it takes to recover or die (default is 0.045)
+        extrapolate_to_date : datetime.datetime, optional
+            used for simulation, if set to None only dates reported by CSSE will be taken
+            into account
         """
         self.fname = CFnames()
         self.country = country
@@ -146,8 +174,6 @@ class CDataTimeSeries:
                 continue
             dt_dict[day.strftime('%Y-%m-%d')]=self._calc_doubling_time_on_date(day,average_interval_days=average_interval_days)
         return(dt_dict)
-
-
 
     def _get_time_range_indices(self, start_date=None, end_date=None):
         """Retrieve start index and end index of a time range in self.days
@@ -250,6 +276,26 @@ class CDataTimeSeries:
 
 
 class CDataTimeSeriesCollection:
+    """
+    Class representing and plotting several time series data sets in a collection.
+    ...
+    Attributes
+    ----------
+    country_list : list of strings
+        list of strings containing the country names
+    data_collection : list of CDataTimeSeries objects
+        Times series objects of the countries defined in country_list.
+    
+    Methods
+    -------
+    _collect_data_for_selected_countries(self)
+        loads the data for the selected countries
+    _get_data_from_country_name(self, c_name:str)
+        returns the CDataTimeSeriesObject from the collection where country = c_name
+    add_data_time_series_to_collection(self, ds:CDataTimeSeries)
+        append a data set to the collection
+    """
+
     def __init__(self, country_list):
         self.country_list=list(country_list)
         self.data_collection=[]
@@ -259,13 +305,13 @@ class CDataTimeSeriesCollection:
         for country in self.country_list:
             self.data_collection.append(CDataTimeSeries(country=country))
     
-    def _get_data_from_country_name(self, c_name):
+    def _get_data_from_country_name(self, c_name:str):
         for ds in self.data_collection:
             if ds.country==c_name:
                 return(ds)
         return(None)
 
-    def add_data_times_series_to_collection(self, ds):
+    def add_data_time_series_to_collection(self, ds:CDataTimeSeries):
         self.country_list.append(ds.country)
         self.data_collection.append(ds)
             

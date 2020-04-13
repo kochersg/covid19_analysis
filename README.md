@@ -25,3 +25,19 @@ The classes in `covid_view.py` are used to visualize the data of the doc-classes
 * `CTimeSeriesDataView` and
 * `CTimeSeriesDataCollectionView`
 are available
+
+## Examples
+
+### Single data set
+![alt text](./example_images/SingleData.png "Visualize single data set")
+
+### Time in days to dublicate number of cases
+![alt text](./example_images/Doubling_times.png "Time to double number of cases")
+
+### Collection plot of times series data 
+![alt text](./example_images/Collect_Subplots.png "Print all data of a collection into a figure with several subplots")
+
+### Comparison of data set and simulation 
+![alt text](./example_images/Compare_CDataTimeSeriesObjects.png "Two selected data sets of a collection into a single plot")
+
+
