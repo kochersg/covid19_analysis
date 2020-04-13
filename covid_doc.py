@@ -48,7 +48,8 @@ class CDataTimeSeries:
         xlabel 'Date' is plotted (useful for many staggered subplots)
 
     """
-    def __init__(self, country='Germany', sim_data=False, infrate_dict={'30':1.38, '31':1.37, '35':1.3, '40': 1.22}, \
+    def __init__(self, country='Germany', sim_data=False, \
+        doubling_time_dict={'2020-02-01':3, '2020-03-01':1.37, '2020-04-01':1.22}, \
         mortality=0.01, days_to_recovery=14, extrapolate_to_date=None):
         """
         Parameter
@@ -61,7 +62,7 @@ class CDataTimeSeries:
         self.latitude = None
         self.longitude = None
         self.sim_data = sim_data
-        self.sim_infrate_dict = infrate_dict
+        self.sim_doubling_dict = doubling_time_dict
         self.sim_mortality = mortality
         self.sim_days_to_recovery = days_to_recovery
         self.sim_extrapolate_to_date = extrapolate_to_date
@@ -92,7 +93,6 @@ class CDataTimeSeries:
             is the average value over the selected time range (defaul is 1)
 
         """
-
         ixs, ixe = self._get_time_range_indices(start_date=date-tdelta(days=average_interval_days),end_date=date)
         nc2 = self.n_confirmed[ixe]
         nc1 = self.n_confirmed[ixs]
@@ -115,12 +115,38 @@ class CDataTimeSeries:
             is the average value over the selected time range (defaul is 1)
 
         """
-
         ixs, ixe = self._get_time_range_indices(start_date=start_date, end_date=end_date)
         double_t=[]
         for day in self.days[ixs:ixe]:
             double_t.append(self._calc_doubling_time_on_date(day,average_interval_days=average_interval_days))
         return(np.array(double_t))
+
+
+    def _get_doubling_time_dict_over_interval(self, start_date:dt=None, end_date:dt=None, average_interval_days:int=1):
+        """Calculates the time interval needed to double the number of confirmed cases
+        over a given time range from start_date to end_date and returns it as dict.
+        Can be used as input for simulated data.
+
+        Parameters
+        ----------
+        start_date : datetime object, optional
+            Start date of the time interval to calculate the doubling time for (default is None)
+        end_date : datetime object, optional
+            Start date of the time interval to calculate the doubling time for (default is None)
+        average_interval_days : int, optional
+            sets the number of days to look back into past from given date. Returned value
+            is the average value over the selected time range (defaul is 1)
+
+        """
+        ixs, ixe = self._get_time_range_indices(start_date=start_date, end_date=end_date)
+        dt_dict = {}
+        for day in self.days[ixs:ixe]:
+            double_t = self._calc_doubling_time_on_date(day,average_interval_days=average_interval_days)
+            if np.isinf(double_t) or np.isnan(double_t) or double_t==0:
+                continue
+            dt_dict[day.strftime('%Y-%m-%d')]=self._calc_doubling_time_on_date(day,average_interval_days=average_interval_days)
+        return(dt_dict)
+
 
 
     def _get_time_range_indices(self, start_date=None, end_date=None):
@@ -166,20 +192,28 @@ class CDataTimeSeries:
         self.n_confirmed[0]=1
         for ix in range(len(self.days)-1):
             day=ix+1
-            inf_rate = self.__get_inf_rate_from_dict(day)
+            inf_rate = self._doubling_time_to_infrate(self.__get_doubling_time_from_dict(self.days[day]))
             self.n_confirmed[day]=(self.n_confirmed[day-1])*inf_rate
             if day >= self.sim_days_to_recovery:
-                self.n_deaths[day]=self.n_confirmed[day-self.sim_days_to_recovery]*self.sim_mortality
-                self.n_recovered[day]=self.n_confirmed[day-self.sim_days_to_recovery]*(1-self.sim_mortality)
+                d_to_recv = int(np.round(self.sim_days_to_recovery))
+                self.n_deaths[day]=self.n_confirmed[day-d_to_recv]*self.sim_mortality
+                self.n_recovered[day]=self.n_confirmed[day-d_to_recv]*(1-self.sim_mortality)
 
-    def __get_inf_rate_from_dict(self, day):
-        dict_days=[int(d_str) for d_str in self.sim_infrate_dict.keys()]
+    def __get_doubling_time_from_dict(self, day):
+        dict_days=[dt.strptime(d_str,'%Y-%m-%d') for d_str in self.sim_doubling_dict.keys()]
         # print(dict_days)
         for d_day in dict_days:
             if day <= d_day:
-                return(self.sim_infrate_dict[str(d_day)])
-        return(self.sim_infrate_dict[list(self.sim_infrate_dict.keys())[-1]])
+                return(self.sim_doubling_dict[d_day.strftime('%Y-%m-%d')])
+        return(self.sim_doubling_dict[list(self.sim_doubling_dict.keys())[-1]])
        
+    @staticmethod
+    def _infrate_to_doubling_time(infrate):
+        return(np.log(2)/np.log(infrate))
+
+    @staticmethod
+    def _doubling_time_to_infrate(doubling_time):
+        return(np.exp(np.log(2)/doubling_time))
 
     def __read_csv_data(self,fname):
         try:
