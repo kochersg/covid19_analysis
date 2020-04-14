@@ -16,37 +16,42 @@ given by covid_doc.
 Visualization is achieved by the views classes in covid_view
 
 """
+import matplotlib.pyplot as plt
 from covid_doc import CDataTimeSeries, CDataTimeSeriesCollection
 from covid_view import CDataTimeSeriesView, CDataTimeSeriesCollectionView
 from datetime import datetime as dt
+from logzero import logger
 
+def _save_figure(fig:plt.figure, save_file_name:str):
+    if save_file_name != None:
+        try:
+            fig.savefig(save_file_name)
+        except NotADirectoryError:
+            logger.warning('Unable to save file ' + save_file_name)
 
-if __name__ == "__main__":
-    # select time range for plotting
-    from_date = None  #dt(2020,3,1)
-    to_date = None    #dt(2020,4,5)
+def plot_single_country(country:str, start_date:dt=None, end_date:dt=None, save_file_name:str=None):
+    single_country = CDataTimeSeries(country = country)
+    single_country_view = CDataTimeSeriesView(cv_data=single_country)
+    fig=single_country_view.plot_time_series(show_plot=False, from_date=start_date, to_date=end_date)
+    _save_figure(fig,save_file_name)
+    plt.show()
 
-
-    # # plot time series data of a single country
-    # single_country = CDataTimeSeries(country = 'Germany')
-    # single_country_view = CDataTimeSeriesView(cv_data=single_country)
-    # single_country_view.plot_time_series(show_plot=True, from_date=from_date, to_date=to_date)
-     
-    # # # load data of several countries into a collection
-    countries=('Germany','Italy','Spain','United Kingdom','Austria')
+def plot_country_collection(countries:list, start_date:dt=None, end_date:dt=None, save_file_name:str=None):
     dc = CDataTimeSeriesCollection(countries)
     dc_view = CDataTimeSeriesCollectionView(cv_data_collection=dc)
+    fig = dc_view.plot_collection_subplots(from_date=start_date, to_date=end_date, show_plot=False)
+    _save_figure(fig,save_file_name)
+    plt.show()
 
-    # # # plot the collection data into a graph with one subplot per country   
-    # dc_view.plot_collection_subplots(from_date=from_date, to_date=to_date)
-    
-    # # # plot the progress of the doubling time
-    # c_view = CDataTimeSeriesView(dc._get_data_from_country_name('Italy'))
-    # c_view.plot_doubling_time_over_days(from_date=dt(2020,3,1),average_interval_days=1)
+def plot_doubling_time_single_country(country:str, start_date:dt=None, end_date:dt=None, \
+    save_file_name:str=None):
+    sc = CDataTimeSeries(country)
+    c_view = CDataTimeSeriesView(sc)
+    fig = c_view.plot_doubling_time_over_days(from_date=start_date, to_date=end_date ,average_interval_days=1, show_plot=False)
+    _save_figure(fig,save_file_name)
+    plt.show()
 
-
-    ## Simulate time series date by handing over a dict with doubling times
-
+def plot_simulated_data():
     # plot time series data of a single country
     single_country = CDataTimeSeries(country = 'Germany Sim', sim_data=True, \
         doubling_time_dict= \
@@ -83,13 +88,43 @@ if __name__ == "__main__":
         days_to_recovery=12.65, extrapolate_to_date=dt(2020,5,20), \
         mortality=0.045)
 
-    # add simulated data to collection     
+    # add simulated data to collection
+    dc = CDataTimeSeriesCollection(['Germany'])    
     dc.add_data_time_series_to_collection(single_country)
 
     # plot a comparison between the timeseries of two different countries into one plot
-    dc_view.plot_country_comparison('Germany','Germany Sim',show_plot=True, from_date=from_date, to_date=to_date)
+    dc_view = CDataTimeSeriesCollectionView(dc)
+    fig = dc_view.plot_country_comparison('Germany','Germany Sim',show_plot=False)
+    _save_figure(fig, './example_images/Compare_CDataTimeSeriesObjects.png')
+    plt.show()
 
-    # dc = CDataTimeSeriesCollection(['Germany', 'Italy', 'United Kingdom', 'Spain', 'Netherlands', 'Austria', 'Switzerland'])
-    # dc_view = CDataTimeSeriesCollectionView(dc)
-    # dc_view.plot_doubling_time_from_date_as_bar_chart()
+def plot_doubling_time_collection(countries, save_file_name=None):
+    dc = CDataTimeSeriesCollection(country_list=countries)
+    dc_view = CDataTimeSeriesCollectionView(dc)
+    fig = dc_view.plot_doubling_time_from_date_as_bar_chart(show_plot = False)
+    _save_figure(fig, save_file_name)
+    plt.show()
+
+if __name__ == "__main__":
+    # select time range for plotting
+    from_date = None #dt(2020,3,10)
+    to_date = None #dt(2020,4,5)
+
+
+    # plot time series data of a single country
+    plot_single_country('Germany', start_date=from_date, end_date=to_date, save_file_name='./example_images/SingleData.png')
+
+    # plot data of several countries into a collection
+    plot_country_collection(['Germany', 'Sweden','Italy','Spain','United Kingdom','Austria'], \
+        start_date=from_date, end_date=to_date, save_file_name='./example_images/Collect_Subplots.png')
+    
+    # plot the progress of the doubling time
+    plot_doubling_time_single_country('Italy', start_date=from_date, end_date=to_date, save_file_name='./example_images/Doubling_times.png')
+
+    # simulate time series date by handing over a dict with doubling times
+    plot_simulated_data()
+
+    # plot doubling time for selected countries
+    plot_doubling_time_collection(['Germany', 'Italy', 'United Kingdom', 'Spain', 'Netherlands', 'Austria', 'Switzerland'], \
+        save_file_name='./example_images/doubling_time_collection.png')
 

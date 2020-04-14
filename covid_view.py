@@ -42,7 +42,7 @@ class CDataTimeSeriesView:
         self.cv_data = cv_data
 
     def plot_time_series(self, ax:plt.axes=None, show_plot:bool=False, show_xlabel:bool=True, use_scientific_notation:bool=False, \
-        from_date:dt=None,to_date:dt=None):
+        from_date:dt=None,to_date:dt=None)->plt.figure:
         """Plots the time series of the selected country
 
         Parameters
@@ -88,10 +88,13 @@ class CDataTimeSeriesView:
         plt.legend()
         if show_plot:
             plt.show()
+        if 'fh' in locals():
+            return(fh)
+        return(plt.gcf())
 
 
     def plot_doubling_time_over_days(self, ax:plt.axes=None, show_plot:bool=True, from_date:dt=None, to_date:dt=None, \
-        average_interval_days:int=1):
+        average_interval_days:int=1)->plt.figure:
         """Plots the time interval needed to double the number of confirmed cases for the selected country
 
         Parameters
@@ -130,6 +133,9 @@ class CDataTimeSeriesView:
 
         if show_plot:
             plt.show()
+        if 'fh' in locals():
+            return(fh)
+        return(plt.gcf())
 
     @staticmethod
     def _nicely_format_date_ticks(ax:plt.axes):
@@ -175,7 +181,7 @@ class CDataTimeSeriesCollectionView:
         """
         self.cv_data_collection=cv_data_collection
 
-    def plot_collection_subplots(self, from_date:dt=None, to_date:dt=None):
+    def plot_collection_subplots(self, from_date:dt=None, to_date:dt=None, show_plot:bool=True)->plt.figure:
         """All time series data of a collection in a figure with subplots
         Parameters
         ----------
@@ -197,7 +203,7 @@ class CDataTimeSeriesCollectionView:
             subplot_str='32'
         elif len(self.cv_data_collection.country_list)<10:
             subplot_str='33'
-        fh = plt.figure(figsize=(14,10))
+        fh = plt.figure(figsize=(15,8))
         for ix, data in enumerate(self.cv_data_collection.data_collection):
             # if ix>int(subplot_str[0])*(int(subplot_str[1])-1):
             #     show_x_label=True
@@ -208,10 +214,12 @@ class CDataTimeSeriesCollectionView:
             data_view = CDataTimeSeriesView(cv_data=data)
             data_view.plot_time_series(ax=ax,show_plot=False, show_xlabel=show_x_label, use_scientific_notation=True, \
                 from_date=from_date, to_date=to_date)
-        plt.show()
+        if show_plot:
+            plt.show()
+        return(fh)
 
     def plot_country_comparison(self, country_name_1:str, country_name_2:str, \
-        ax:plt.axes=None, show_plot:bool=False, from_date:dt=None, to_date:dt=None):
+        ax:plt.axes=None, show_plot:bool=False, from_date:dt=None, to_date:dt=None)->plt.figure:
         """Plot the time series curves of two selected countries from a collection 
         into one plot for comparison purposes. 
         Parameters
@@ -265,9 +273,13 @@ class CDataTimeSeriesCollectionView:
 
         if show_plot:
             plt.show()
+        if 'fh' in locals():
+            return(fh)
+        return(plt.gcf())
+
 
     def plot_doubling_time_from_date_as_bar_chart(self, ax:plt.axes=None, show_plot:bool=True, \
-        date:dt=None, average_interval_days:int=1):
+        date:dt=None, average_interval_days:int=1)->plt.figure:
         if ax==None:
             fh=plt.figure(figsize=(10,7))
             ax=fh.add_subplot(111)
@@ -285,6 +297,10 @@ class CDataTimeSeriesCollectionView:
 
         if show_plot:
             plt.show()
+        if 'fh' in locals():
+            return(fh)
+        return(plt.gcf())
+
 
 
 if __name__ == "__main__":
