@@ -60,6 +60,9 @@ class CDataTimeSeriesView:
             controls the start date for plotting (default is None)
         to_date : datetime object, optional
             controls the end date for plotting (default is None)
+        Returns
+        -------
+        fig : matplotlib.pyplot figure object
 
         """
         if self.cv_data==None:
@@ -111,7 +114,10 @@ class CDataTimeSeriesView:
         average_interval_days : int, optional
             sets the number of days to look back into past from given date. Returned value
             is the average value over the selected time range
-        """
+        Returns
+        -------
+        fig : matplotlib.pyplot figure object
+       """
         if ax == None:
             fh=plt.figure(figsize = [10,8])
             ax=fh.add_subplot(111)
@@ -189,6 +195,11 @@ class CDataTimeSeriesCollectionView:
             controls the start date for plotting (default is None)
         to_date : datetime object, optional
             controls the end date for plotting (default is None)
+        show_plot : boolean, optional
+            controls if the plot is shown at the end of the method call (default is True)
+        Returns
+        -------
+        fig : matplotlib.pyplot figure object
         """
         if self.cv_data_collection==None:
             logger.warning("No collection available, initialize self.cv_data_collection with CDataTimeSeriesCollection object")
@@ -237,6 +248,9 @@ class CDataTimeSeriesCollectionView:
             a figure with axes (default is None)
         show_plot : boolean, optional
             controls if the plot is shown at the end of the method call (default is False)
+        Returns
+        -------
+        fig : matplotlib.pyplot figure object
         """
         if self.cv_data_collection==None:
             logger.warning("No collection available, initialize self.cv_data_collection with CDataTimeSeriesCollection object")
@@ -277,9 +291,25 @@ class CDataTimeSeriesCollectionView:
             return(fh)
         return(plt.gcf())
 
-
     def plot_doubling_time_from_date_as_bar_chart(self, ax:plt.axes=None, show_plot:bool=True, \
         date:dt=None, average_interval_days:int=1)->plt.figure:
+        """Plot the doubling times of a given date for countries from a collection.
+        Parameters
+        ----------
+        ax : matplotlib.pyplot axes object, optional
+            axes object used for plotting, if not provided the function will create
+            a figure with axes (default is None)
+        show_plot : boolean, optional
+            controls if the plot is shown at the end of the method call (default is False)
+        date : datetime object, optional
+            controls the date for plotting (default is None)
+        average_interval_days : int, optional
+            sets the number of days to look back into past from given date. Returned value
+            is the average value over the selected time range
+        Returns
+        -------
+        fig : matplotlib.pyplot figure object
+        """
         if ax==None:
             fh=plt.figure(figsize=(10,7))
             ax=fh.add_subplot(111)
