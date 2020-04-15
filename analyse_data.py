@@ -74,16 +74,17 @@ def plot_simulated_data():
             '2020-04-06':16, \
             '2020-04-07':17, \
             '2020-04-08':18, \
-            '2020-04-12':20, \
-            '2020-04-14':21, \
-            '2020-04-15':22, \
-            '2020-04-20':44, \
-            '2020-04-25':90, \
-            '2020-04-30':180, \
-            '2020-05-05':360, \
-            '2020-05-10':720, \
-            '2020-05-15':1500, \
-            '2020-05-20':3000, \
+            '2020-04-11':22, \
+            '2020-04-12':25, \
+            '2020-04-14':32, \
+            '2020-04-15':50, \
+            '2020-04-20':100, \
+            '2020-04-25':200, \
+            '2020-04-30':400, \
+            '2020-05-05':800, \
+            '2020-05-10':1600, \
+            '2020-05-15':3200, \
+            '2020-05-20':6400, \
         },
         days_to_recovery=12.65, extrapolate_to_date=dt(2020,5,20), \
         mortality=0.045)
@@ -110,6 +111,8 @@ if __name__ == "__main__":
     from_date = None #dt(2020,3,10)
     to_date = None #dt(2020,4,5)
 
+    # simulate time series date by handing over a dict with doubling times
+    plot_simulated_data()
 
     # plot time series data of a single country
     plot_single_country('Germany', start_date=from_date, end_date=to_date, save_file_name='./example_images/SingleData.png')
@@ -120,9 +123,6 @@ if __name__ == "__main__":
     
     # plot the progress of the doubling time
     plot_doubling_time_single_country('Italy', start_date=from_date, end_date=to_date, save_file_name='./example_images/Doubling_times.png')
-
-    # simulate time series date by handing over a dict with doubling times
-    plot_simulated_data()
 
     # plot doubling time for selected countries
     plot_doubling_time_collection(['Germany', 'Italy', 'United Kingdom', 'Spain', 'Netherlands', 'Austria', 'Switzerland'], \
