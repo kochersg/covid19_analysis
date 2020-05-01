@@ -120,17 +120,17 @@ if __name__ == "__main__":
     # simulate time series date by handing over a dict with doubling times
     plot_simulated_data()
 
-    # # plot time series data of a single country
-    # plot_single_country('Germany', start_date=from_date, end_date=to_date, save_file_name='./example_images/SingleData.png')
+    # plot time series data of a single country
+    plot_single_country('Germany', start_date=from_date, end_date=to_date, save_file_name='./example_images/SingleData.png')
 
-    # # plot data of several countries into a collection
-    # plot_country_collection(['Germany', 'Sweden','Italy','Spain','United Kingdom','Austria'], \
-    #     start_date=from_date, end_date=to_date, save_file_name='./example_images/Collect_Subplots.png')
+    # plot data of several countries into a collection
+    plot_country_collection(['Germany', 'Sweden','Italy','Spain','United Kingdom','Austria'], \
+        start_date=from_date, end_date=to_date, save_file_name='./example_images/Collect_Subplots.png')
     
-    # # plot the progress of the doubling time
-    # plot_doubling_time_single_country('Italy', start_date=from_date, end_date=to_date, save_file_name='./example_images/Doubling_times.png')
+    # plot the progress of the doubling time
+    plot_doubling_time_single_country('Italy', start_date=from_date, end_date=to_date, save_file_name='./example_images/Doubling_times.png')
 
-    # # plot doubling time for selected countries
-    # plot_doubling_time_collection(['Germany', 'Italy', 'United Kingdom', 'Spain', 'Netherlands', 'Austria', 'Switzerland'], \
-    #     save_file_name='./example_images/doubling_time_collection.png')
+    # plot doubling time for selected countries
+    plot_doubling_time_collection(['Germany', 'Italy', 'United Kingdom', 'Spain', 'Netherlands', 'Austria', 'Switzerland'], \
+        save_file_name='./example_images/doubling_time_collection.png')
 
