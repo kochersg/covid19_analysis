@@ -51,7 +51,7 @@ def plot_doubling_time_single_country(country:str, start_date:dt=None, end_date:
     _save_figure(fig,save_file_name)
     plt.show()
 
-def plot_simulated_data():
+def plot_simulated_data(start_date:dt=None, end_date:dt=None):
     # plot time series data of a single country
     single_country = CDataTimeSeries(country = 'Germany Sim', sim_data=True, \
         doubling_time_dict= \
@@ -91,6 +91,7 @@ def plot_simulated_data():
             '2020-05-20':160, \
             '2020-05-25':200, \
             '2020-05-30':220, \
+            '2020-06-05':300, \
         },
         days_to_recovery=12.65, extrapolate_to_date=dt(2020,5,20), \
         mortality=0.045)
@@ -101,7 +102,8 @@ def plot_simulated_data():
 
     # plot a comparison between the timeseries of two different countries into one plot
     dc_view = CDataTimeSeriesCollectionView(dc)
-    fig = dc_view.plot_country_comparison('Germany','Germany Sim',show_plot=False)
+    fig = dc_view.plot_country_comparison('Germany','Germany Sim',show_plot=False, 
+        from_date=start_date, to_date=end_date)
     _save_figure(fig, './example_images/Compare_CDataTimeSeriesObjects.png')
     plt.show()
 
@@ -114,11 +116,11 @@ def plot_doubling_time_collection(countries, save_file_name=None):
 
 if __name__ == "__main__":
     # select time range for plotting
-    from_date = None #dt(2020,3,10)
-    to_date = None #dt(2020,4,5)
+    from_date = dt(2020,3,1)
+    to_date = dt(2020,6,5)
 
     # simulate time series date by handing over a dict with doubling times
-    plot_simulated_data()
+    plot_simulated_data(start_date=from_date, end_date=to_date)
 
     # plot time series data of a single country
     plot_single_country('Germany', start_date=from_date, end_date=to_date, save_file_name='./example_images/SingleData.png')
