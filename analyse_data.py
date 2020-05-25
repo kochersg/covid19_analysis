@@ -117,7 +117,7 @@ def plot_doubling_time_collection(countries, save_file_name=None):
 if __name__ == "__main__":
     # select time range for plotting
     from_date = dt(2020,3,1)
-    to_date = dt(2020,6,5)
+    to_date = None #dt(2020,6,5)
 
     # simulate time series date by handing over a dict with doubling times
     plot_simulated_data(start_date=from_date, end_date=to_date)
