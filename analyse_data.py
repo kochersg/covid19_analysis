@@ -92,8 +92,10 @@ def plot_simulated_data(start_date:dt=None, end_date:dt=None):
             '2020-05-25':200, \
             '2020-05-30':220, \
             '2020-06-05':300, \
+            '2020-06-10':350, \
+            '2020-06-15':380, \
         },
-        days_to_recovery=12.65, extrapolate_to_date=dt(2020,5,20), \
+        days_to_recovery=12.65, extrapolate_to_date=dt(2020,6,15), \
         mortality=0.045)
 
     # add simulated data to collection
