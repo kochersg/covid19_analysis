@@ -128,7 +128,7 @@ if __name__ == "__main__":
     plot_single_country('Germany', start_date=from_date, end_date=to_date, save_file_name='./example_images/SingleData.png')
 
     # plot data of several countries into a collection
-    plot_country_collection(['Germany', 'Sweden','Italy','Spain','United Kingdom','Austria'], \
+    plot_country_collection(['Germany', 'Sweden','Italy','Spain','United Kingdom','Denmark'], \
         start_date=from_date, end_date=to_date, save_file_name='./example_images/Collect_Subplots.png')
     
     # plot the progress of the doubling time
