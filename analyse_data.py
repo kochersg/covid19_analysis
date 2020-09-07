@@ -98,6 +98,7 @@ def plot_simulated_data(start_date:dt=None, end_date:dt=None):
             '2020-07-30':500, \
             '2020-08-30':500, \
             '2020-09-30':300, \
+            '2020-10-30':300, \
         },
         days_to_recovery=12.65, extrapolate_to_date=dt(2020,8,30), \
         mortality=0.045)
