@@ -293,11 +293,12 @@ class CDataTimeSeries:
         n_data = []
         for d in data:
             n_strs = d.split(",")
+            n_strs=[str(n_str).strip() for n_str in n_strs]
             if n_strs[1] == self.country and n_strs[0] == "":
                 self.latitude = float(n_strs[2])
                 self.longitude = float(n_strs[3])
                 for n_str in n_strs[4:]:
-                    n_data.append(int(n_str))
+                    n_data.append(float(n_str))
                 break
         return np.array(n_data)
 
